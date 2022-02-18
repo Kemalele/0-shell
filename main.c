@@ -2,6 +2,9 @@
 #include "string.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <limits.h>
+#include <dirent.h>
+
 
 void run();
 void handleCommand(char *input);
@@ -17,7 +20,7 @@ void run() {
     char *input;
     input = malloc(sizeof(char));
     int stop = 0;
-    
+
     while(stop != 1) {
         printf("$ ");
         gets(input);
@@ -37,12 +40,21 @@ void handleCommand(char *input) {
 }
 
 void pwd() {
-    char *input;
-    input = malloc(sizeof(char));
-    getwd(input);
-    printf("%s\n", input);
+    char input[PATH_MAX];
+    if (getcwd(input, sizeof(input)) != NULL) {
+        printf("%s\n", input);
+    } else {
+        printf("ERROR: getcwd()");
+    }
 }
 
 void ls() {
-    printf("ls command\n");
+    DIR *dir = opendir(".");
+    struct dirent * entry;
+
+    while((entry = readdir(dir)) != NULL) {
+        printf("%s ", entry->d_name);
+    }
+
+    printf("\n");
 }
